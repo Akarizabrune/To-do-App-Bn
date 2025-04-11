@@ -1,4 +1,7 @@
-import { createTaskService } from "../services/task.services.js";
+import { createTaskService, getAllTasksservice } from "../services/task.services.js";
+import Task from "../models/task.js";
+import mongoose from "mongoose";
+import task from "../models/task.js";
 
 export const createTask=async(req,res)=>{
     const user=req.user;
@@ -22,4 +25,59 @@ console.log("description=",description)
     }catch(error){
         return res.status(500).json({message:"internal server error!",error});
     }
+}
+export const getAllTasks=async(req,res)=>{
+    const user=req.user
+    try{
+        if(!user){
+            return res.status(401).json({message:"user must first be logged in"})
+        }
+        const userTasks=await getAllTasksservice(user)
+        return res.status(200).json(userTasks)
+        
+        
+    }catch(error){
+        return res.status(500).json({message:"internal server Error",error})
+    }
+}
+export const updateTasks=async(req,res)=>{
+    try{
+        const {id}=req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid Task ID format!" });
+          }
+
+        const updatedTask=await Task.findByIdAndUpdate(id,req.body,{
+            new:true,
+            runValidators:true,
+        });
+        if(!updatedTask){
+            return res.status(404).json({message:"Task not found"})
+        }
+        res.status(200).json(updatedTask)
+    }catch(error){
+        console.log(error)
+        res.status(500).json({message:"internal server error"})
+    }
+   
+    
+}
+export const deleteTask=async(req,res)=>{
+    try{
+        const {id}=req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid Task ID format!" });
+          }
+          const deletedTask=await task.findByIdAndDelete(id)
+          if(!deletedTask){
+            return res.status(404).json({message:"Task not found"})
+          }
+          res.status(200).json({message:"Task has deleted successfuly"});
+
+
+    }catch(error){
+        console.log(error)
+        res.status(500).json({mesage:"internal server error"})
+    }
+
 }

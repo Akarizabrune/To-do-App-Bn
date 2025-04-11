@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { register,login, getMe } from '../controllers/authcontollers.js';
 import { validate, registerSchema, loginSchema } from '../middleware/validate.js';
 import { protect } from '../middleware/auth.js';
+import userUpdate from '../controllers/User.controllers.js';
 
 const router = Router();
 
@@ -9,5 +10,6 @@ router.post('/register', validate(registerSchema), register);
 router.post('/login', validate(loginSchema), login);
 
 router.get('/me', protect, getMe);
+router.put('/:id',userUpdate);
 
 export default router;

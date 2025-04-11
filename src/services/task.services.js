@@ -23,3 +23,12 @@ export const createTaskService=async(user,taskData)=>{
     }
 
 };
+export const getAllTasksservice=async(user)=>{
+    try{
+        const userTaskData=await task.find({user:user.id})
+        return userTaskData
+    }catch(error){
+        throw new ApiError("error fetching task",error)
+
+    }
+}
